@@ -8,15 +8,11 @@ const ExamPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Ensure answers is always an array from localStorage
-  const initialAnswers = JSON.parse(localStorage.getItem("answers") || "[]");
-  const answersArray = Array.isArray(initialAnswers) ? initialAnswers : [];
-
-  // Initialize state with answers as an array
+  // Optimized state management for answers and marked questions
   const [examData, setExamData] = useState({
     questions: location.state?.questions || [],
-    answers: answersArray,
-    markedQuestions: JSON.parse(localStorage.getItem("markedQuestions") || "{}"),
+    answers: JSON.parse(localStorage.getItem("answers") || '{}'),
+    markedQuestions: JSON.parse(localStorage.getItem("markedQuestions") || '{}'),
   });
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -69,51 +65,22 @@ const ExamPage = () => {
   // Helper function to format time
   const formatTime = (seconds) => new Date(seconds * 1000).toISOString().substr(11, 8);
 
-  // Helper to get answer for current question
-  const getCurrentAnswer = () => {
-    const currentQuestion = examData.questions[currentQuestionIndex];
-    return examData.answers.find(a => a.question_id === currentQuestion?.id);
-  };
-
-  // Helper to update answer for current question ensuring the required format
-  const updateAnswer = (selectedValue) => {
-    const currentQuestion = examData.questions[currentQuestionIndex];
-    if (!currentQuestion) return;
-    const questionId = String(currentQuestion.question_id);
-    const existingIndex = examData.answers.findIndex(a => a.question_id === questionId);
-    const newAnswer = { question_id: questionId, selected_answer: Number(selectedValue) };
-    let updatedAnswers;
-    if (existingIndex > -1) {
-      updatedAnswers = [...examData.answers];
-      updatedAnswers[existingIndex] = newAnswer;
-    } else {
-      updatedAnswers = [...examData.answers, newAnswer];
-    }
-    setExamData(prev => ({ ...prev, answers: updatedAnswers }));
-  };
-
   const handleOptionSelect = (option) => {
-    // Convert option to number when storing the answer
-    updateAnswer(option);
+    setExamData(prev => ({ 
+      ...prev, 
+      answers: { ...prev.answers, [currentQuestionIndex]: option } 
+    }));
   };
 
   const handleIntegerInput = (e) => {
     const inputValue = e.target.value;
-    if (/^[0-9]*$/.test(inputValue) && inputValue !== "") {
-      updateAnswer(inputValue);
-    } else if (inputValue === "") {
-      // Optionally, remove answer if field is cleared
-      const currentQuestion = examData.questions[currentQuestionIndex];
-      if (!currentQuestion) return;
-      const questionId = currentQuestion.id;
-      const updatedAnswers = examData.answers.filter(a => a.question_id !== questionId);
-      setExamData(prev => ({ ...prev, answers: updatedAnswers }));
+    if (/^[0-9]*$/.test(inputValue)) {
+      setExamData(prev => ({ ...prev, answers: { ...prev.answers, [currentQuestionIndex]: inputValue } }));
     }
   };
 
   const handleMarkForReview = () => {
-    const currentQuestion = examData.questions[currentQuestionIndex];
-    const isAnswered = !!examData.answers.find(a => a.question_id === currentQuestion.id);
+    const isAnswered = !!examData.answers[currentQuestionIndex];
     const markType = isAnswered ? "reviewedWithAnswer" : "reviewedWithoutAnswer";
 
     setExamData(prev => ({
@@ -151,12 +118,9 @@ const ExamPage = () => {
         markedQuestions: examData.markedQuestions,
       };
   
-      const response = await fetch("http://localhost:5001/api/save-attempt", {
+      const response = await fetch("http://localhost:5000/api/save-attempt", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        }, // ✅ Correct format
+        headers: { "Content-Type": "application/json" }, // ✅ Correct format
         body: JSON.stringify(examSubmissionData),
       });
       
@@ -198,18 +162,15 @@ const ExamPage = () => {
 
           {examData.questions[currentQuestionIndex]?.type === "MCQ" ? (
             <div className="exam-options">
-              {examData.questions[currentQuestionIndex]?.options.map((option, index) => {
-                const currentAnswer = getCurrentAnswer();
-                return (
-                  <div 
-                    key={index}
-                    className={`exam-option ${currentAnswer && currentAnswer.selected_answer === Number(option) ? "selected" : ""}`}
-                    onClick={() => handleOptionSelect(option)}
-                  >
-                    {option}
-                  </div>
-                );
-              })}
+              {examData.questions[currentQuestionIndex]?.options.map((option, index) => (
+                <div 
+                  key={index}
+                  className={`exam-option ${examData.answers[currentQuestionIndex] === option ? "selected" : ""}`}
+                  onClick={() => handleOptionSelect(option)}
+                >
+                  {option}
+                </div>
+              ))}
             </div>
           ) : (
             <div className="exam-integer-input">
@@ -217,7 +178,7 @@ const ExamPage = () => {
                 type="text"
                 pattern="[0-9]*"
                 className="integer-input"
-                value={getCurrentAnswer()?.selected_answer || ""}
+                value={examData.answers[currentQuestionIndex] || ""}
                 onChange={handleIntegerInput}
               />
             </div>
@@ -229,25 +190,22 @@ const ExamPage = () => {
       <div className="exam-navigation-panel">
         <h3>Questions</h3>
         <div className="question-grid">
-          {examData.questions.map((question, index) => {
-            const answered = examData.answers.find(a => a.question_id === String(question.question_id));
-            return (
-              <button 
-                key={index} 
-                className={`question-button 
-                  ${answered ? "answered" : "not-visited"} 
-                  ${examData.markedQuestions[index] === "reviewedWithAnswer" ? "marked-with-answer" : ""}
-                  ${examData.markedQuestions[index] === "reviewedWithoutAnswer" ? "marked-without-answer" : ""}
-                `}
-                onClick={() => setCurrentQuestionIndex(index)}
-              >
-                {index + 1}
-              </button>
-            );
-          })}
+          {examData.questions.map((_, index) => (
+            <button 
+              key={index} 
+              className={`question-button 
+                ${examData.answers[index] ? "answered" : "not-visited"} 
+                ${examData.markedQuestions[index] === "reviewedWithAnswer" ? "marked-with-answer" : ""}
+                ${examData.markedQuestions[index] === "reviewedWithoutAnswer" ? "marked-without-answer" : ""}
+              `}
+              onClick={() => setCurrentQuestionIndex(index)}
+            >
+              {index + 1}
+            </button>
+          ))}
         </div>
         <button onClick={handleMarkForReview} className="mark-review-button">
-          {examData.markedQuestions[currentQuestionIndex] ? "Unmark Review" : "Mark for Review"}
+            {examData.markedQuestions[currentQuestionIndex] ? "Unmark Review" : "Mark for Review"}
         </button>
 
         <div className="exam-buttons">

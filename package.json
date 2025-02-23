@@ -1,16 +1,5 @@
 {
-  "name": "jee-practice-pro",
-  "private": true,
-  "workspaces": [
-    "BacktrackJEE-my-new-branch",
-    "Portal_front-main"
-  ],
-  "scripts": {
-    "backend": "cd BacktrackJEE-my-new-branch && npm run dev",
-    "frontend": "cd Portal_front-main && npm run dev",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.2"
+  "dependencies": {
+    "react": "^19.0.0"
   }
 }
