@@ -1,5 +1,4 @@
 {
-  "name": "jee-practice-pro-frontend",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
