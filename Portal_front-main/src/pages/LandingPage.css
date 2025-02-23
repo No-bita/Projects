@@ -21,6 +21,13 @@
     line-height: 1.6;
   }
   
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* ✅ Prevents horizontal scrolling */
+}
+
   /* Hero Container */
   .hero-container {
     background: #f8fafc;
@@ -32,9 +39,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    width: 100%;
+    max-width: 100vw;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem 3rem;
   }
   
   .logo-container {
@@ -57,10 +65,14 @@
   
   .nav-buttons {
     display: flex;
+    align-items: center;
     gap: 1.5rem;
   }
   
   .nav-login {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
     color: var(--text-dark);
     text-decoration: none;
     transition: color 0.3s ease;
@@ -85,9 +97,10 @@
   
   /* Hero Content */
   .hero-section {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 100vw;
     margin: 0 auto;
-    padding: 4rem 1rem;
+    padding: 2rem 3rem;
   }
   
   .hero-content {
@@ -173,11 +186,12 @@
   
   /* Hero Illustration */
   .hero-illustration {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 100vw;
     margin: 4rem auto 0;
+    padding: 1rem;
     background: var(--white);
     border-radius: 1rem;
-    padding: 1rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
   }
   
@@ -200,7 +214,9 @@
   }
   
   .features-container {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 100vw;
+    padding: 4rem 3rem;
     margin: 0 auto;
   }
   
@@ -268,7 +284,9 @@
   }
   
   .stats-container {
-    max-width: 1200px;
+    width: 100%;
+    max-width:100vw;
+    padding: 2rem 3rem;
     margin: 0 auto;
   }
   
@@ -308,8 +326,10 @@
   }
   
   .final-cta-container {
-    max-width: 800px;
+    width: 100%;
+    max-width: 100vw;
     margin: 0 auto;
+    padding: 2rem 3rem;
     text-align: center;
   }
   

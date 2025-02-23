@@ -92,7 +92,7 @@ const Register = () => {
       <div className="auth-card">
         <header className="auth-header">
           <h1 className="auth-title">Create Account</h1>
-          <p className="auth-subtitle">Join our community today</p>
+          <p className="auth-subtitle">Final step to cracking Mains!</p>
         </header>
 
         <form onSubmit={handleSubmit} className="auth-form">

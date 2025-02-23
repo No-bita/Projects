@@ -130,24 +130,28 @@ const ExamPage = () => {
   };
 
   const handleSubmit = async () => {
-    // Fetch the token from localStorage
     const token = localStorage.getItem("token");
-  
-    // Check if the token is available
+
     if (!token) {
       alert("You are not authenticated. Please log in first.");
-      navigate("/login"); // Redirect to login if the token is missing
+      navigate("/login");
       return;
     }
-  
+
     try {
-      // Collect all the necessary data to be sent to the backend
+      // Transform the answers object to include question_id and selected_answer
+      
+      const formattedAnswers = examData.questions.map((question, index) => ({
+        question_id: question._id || index, // Use question._id if available, otherwise use index
+        selected_answer: examData.answers[index] || "", // Use the selected answer or an empty string if not answered
+      }));
+
       const examSubmissionData = {
         user_id: localStorage.getItem("user_id"),
         user_name: localStorage.getItem("user_name"),
-        year: localStorage.getItem("year"),  // Ensure these values exist
+        year: localStorage.getItem("year"),
         slot: localStorage.getItem("slot"),
-        answers: examData.answers,
+        answers: formattedAnswers, // Use the formatted answers
         markedQuestions: examData.markedQuestions,
       };
   
@@ -159,12 +163,11 @@ const ExamPage = () => {
         }, // ✅ Correct format
         body: JSON.stringify(examSubmissionData),
       });
-      
-  
+
       const result = await response.json();
       if (response.ok) {
         alert("Attempt saved successfully!");
-        localStorage.clear(); // Clear all saved data after successful submission
+        localStorage.clear();
         navigate("/results");
       } else {
         alert(`Submission Failed: ${result.message}`);
@@ -173,7 +176,7 @@ const ExamPage = () => {
       console.error("Error submitting attempt:", error);
       alert("An error occurred while submitting.");
     }
-  };  
+  };
 
   return (
     <div className="exam-container">
