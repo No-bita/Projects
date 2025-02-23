@@ -116,18 +116,12 @@ const ExamPage = () => {
         slot: localStorage.getItem("slot"),
         answers: examData.answers,
         markedQuestions: examData.markedQuestions,
-        timeSpent: 3 * 60 * 60 - timeLeft,  // Calculate time spent in seconds
       };
   
-      // Send the data via POST request
-      const formData = new URLSearchParams();
-      formData.append("user_id", "123");
-      formData.append("answers", JSON.stringify({ "1": "A", "2": "B" }));
-      
       const response = await fetch("http://localhost:5000/api/save-attempt", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData
+        headers: { "Content-Type": "application/json" }, // ✅ Correct format
+        body: JSON.stringify(examSubmissionData),
       });
       
   
