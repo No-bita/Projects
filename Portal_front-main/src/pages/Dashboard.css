@@ -1,244 +1,225 @@
-/* ===== Global Variables ===== */
+/* ===== Global Styles ===== */
 :root {
-  /* Colors */
-  --color-background: #f8f9fa;
-  --color-surface: #ffffff;
   --color-primary: #007bff;
   --color-primary-hover: #0056b3;
-  --color-text: #333;
-  --color-text-light: #666;
-  --color-border: #ddd;
   --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-text: #333;
+  --color-light: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #ddd;
+  
+  --border-radius-sm: 5px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
 
-  /* Spacing */
-  --space-xs: 0.5rem;
-  --space-sm: 1rem;
-  --space-md: 1.5rem;
-  --space-lg: 2rem;
-
-  /* Typography */
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.5rem;
-
-  /* Effects */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
 }
 
-/* ===== Base Styles ===== */
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: var(--color-background);
-  min-height: 100vh;
+/* ===== Base Layout ===== */
+.dashboard-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
-/* ===== Navigation Bar ===== */
-.navbar {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-  padding: var(--space-sm) var(--space-md);
+/* ===== Header Section ===== */
+.dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 1000;
+  margin-bottom: 2rem;
 }
 
-.navbar-logo {
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.nav-links {
-  display: flex;
-  gap: var(--space-md);
-}
-
-.nav-link {
-  color: var(--color-text);
-  text-decoration: none;
-  font-size: var(--text-base);
-  transition: color 0.2s ease-in-out;
-}
-
-.nav-link:hover {
-  color: var(--color-primary);
-}
-
-.nav-profile {
+.user-info {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 1rem;
 }
 
-.profile-pic {
-  width: 32px;
-  height: 32px;
+.user-avatar {
+  font-size: 2rem;
+  background: var(--color-light);
+  padding: 0.75rem;
   border-radius: 50%;
-  border: 2px solid var(--color-border);
 }
 
-/* ===== Responsive Navbar for Mobile ===== */
-@media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-
-  .nav-profile {
-    margin-left: auto;
-  }
+.username {
+  font-weight: bold;
+  color: var(--color-primary);
 }
 
-/* ===== Dashboard Layout ===== */
-.dashboard-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--space-lg);
-}
-
-/* ===== Shared Components ===== */
-.card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
-}
-
-.badge {
-  display: inline-flex;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: 2rem;
-  background: var(--color-background);
-  font-size: var(--text-sm);
-  font-weight: 500;
-}
-
-/* ===== Interactive Elements ===== */
-.button,
-.primary-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-sm) var(--space-md);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
+.logout-button {
+  background: none;
+  border: 2px solid var(--color-danger);
+  color: var(--color-danger);
+  padding: 8px 12px;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.primary-button {
-  background: var(--color-primary);
-  color: white;
+.logout-button:hover {
+  background: var(--color-danger);
+  color: var(--color-white);
 }
 
-.primary-button:hover {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
+/* ===== Exam Selection Card ===== */
+.exam-card {
+  background: var(--color-white);
+  padding: 2rem;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-top: 1.5rem;
 }
 
-.text-button {
-  background: none;
-  border: none;
-  color: var(--color-primary);
-  padding: 0;
-  font-weight: 500;
+.form-group {
+  margin-bottom: 1rem;
 }
 
-.text-button:hover {
-  text-decoration: underline;
+label {
+  font-weight: 600;
 }
 
-/* ===== Dashboard Sections ===== */
-.dashboard-header {
-  text-align: center;
-  margin-bottom: var(--space-lg);
-}
-
-.dashboard-header h2 {
-  font-size: var(--text-xl);
-  margin-bottom: var(--space-xs);
-  color: var(--color-text);
-}
-
-.dashboard-header p {
-  color: var(--color-text-light);
-}
-
-.exam-selector .form-group {
-  margin-bottom: var(--space-md);
-}
-
-.exam-selector label {
-  display: block;
-  margin-bottom: var(--space-xs);
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.exam-selector select {
+select {
   width: 100%;
-  padding: var(--space-sm);
+  padding: 10px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-white);
   transition: border-color 0.2s ease;
 }
 
-.exam-selector select:focus {
+select:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* ===== Attempt History ===== */
-.attempt-history .attempt-list {
-  display: grid;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
+.start-button {
+  width: 100%;
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: 12px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-.attempt-history .attempt-card {
+.start-button:hover {
+  background: var(--color-primary-hover);
+}
+
+/* ===== Performance Overview ===== */
+.performance-overview {
+  background: var(--color-white);
+  padding: 1.5rem;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  text-align: center;
+  background: var(--color-light);
+  padding: 1rem;
+  border-radius: var(--border-radius-md);
+}
+
+.stat-card h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+/* ===== Exam History Section ===== */
+.exam-history {
+  margin-top: 2rem;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: var(--space-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  padding: 10px;
+  background: var(--color-light);
+  border-radius: var(--border-radius-sm);
 }
 
-.attempt-history .attempt-meta {
-  display: flex;
-  gap: var(--space-md);
-  color: var(--color-text-light);
+/* Badge (Correct / Incorrect) */
+.badge {
+  padding: 5px 10px;
+  border-radius: var(--border-radius-sm);
+  color: var(--color-white);
+  font-weight: bold;
+}
+
+.badge.correct {
+  background: var(--color-success);
+}
+
+.badge.incorrect {
+  background: var(--color-danger);
+}
+
+/* ===== Exam Table (History with Retry) ===== */
+.exam-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.exam-table th, 
+.exam-table td {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.exam-table th {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.retry-button {
+  background: var(--color-success);
+  color: var(--color-white);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.retry-button:hover {
+  background: #218838;
 }
 
 /* ===== Responsive Design ===== */
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: var(--space-md);
+    padding: 1rem;
   }
 
-  .attempt-history .attempt-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-sm);
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .attempt-history .attempt-meta {
+  .history-item {
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: 0.5rem;
   }
 }
 
@@ -246,6 +227,5 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
-    transform: none !important;
   }
 }

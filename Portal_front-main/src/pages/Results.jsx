@@ -1,170 +1,137 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { getResults } from '../services/exam';
-import { FiCheck, FiX, FiAlertTriangle } from 'react-icons/fi';
-import Modal from '../components/Layout/Modal';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext"; // ✅ Ensure correct path
+import { useNavigate } from "react-router-dom";
+import "./Results.css"; // ✅ Styled Results Page
 
 const Results = () => {
-  const { attemptId } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [results, setResults] = useState(null);
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Fetch results data
   useEffect(() => {
-    const loadResults = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    const fetchResults = async () => {
       try {
-        const data = await getResults(attemptId);
+        const user_id = localStorage.getItem("user_id");
+        const year = localStorage.getItem("year");
+        const slot = localStorage.getItem("slot");
+
+        if (!user_id || !year || !slot) {
+          setError("Missing user attempt data.");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(
+          `http://localhost:5001/api/results/calculate?user_id=${user_id}&year=${year}&slot=${encodeURIComponent(slot)}`,
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Error fetching results");
+        }
         setResults(data);
       } catch (err) {
-        setError('Failed to load results. Please try again later.');
+        console.error("Error fetching results:", err);
+        setError(err.message || "Failed to fetch results. Please try again.");
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    loadResults();
-  }, [attemptId]);
-
-  // Calculate subject-wise performance
-  const subjectStats = results?.questions.reduce((acc, question, index) => {
-    const subject = question.subject;
-    const isCorrect = results.detailedResults[index].correct;
-    
-    if (!acc[subject]) {
-      acc[subject] = {
-        correct: 0,
-        incorrect: 0,
-        total: 0,
-        marks: 0
-      };
-    }
-    
-    acc[subject].total++;
-    acc[subject].marks += results.detailedResults[index].marksAwarded;
-    isCorrect ? acc[subject].correct++ : acc[subject].incorrect++;
-    
-    return acc;
-  }, {});
-
-  if (isLoading) return <div className="loader">Loading Results...</div>;
-  if (error) return <div className="error-message">{error}</div>;
-  if (!results) return null;
+    fetchResults();
+  }, [navigate, user]);
 
   return (
     <div className="results-container">
-      <div className="results-header">
-        <h1>Exam Results</h1>
-        <div className="overall-score">
-          <div className="score-card">
-            <span className="score-label">Total Score</span>
-            <span className="score-value">
-              {results.score}/{results.maxPossibleScore}
-            </span>
+      <h1>📊 Exam Results</h1>
+
+      {loading && <p>Loading results...</p>}
+      {error && <p className="error-message">{error}</p>}
+
+      {results && (
+        <>
+          {/* ✅ Score Summary Section */}
+          <div className="score-summary">
+            <div className="score-box correct">
+              <span>✅ Correct</span>
+              <strong>{results.correct_answers}</strong>
+            </div>
+            <div className="score-box incorrect">
+              <span>❌ Incorrect</span>
+              <strong>{results.incorrect_answers}</strong>
+            </div>
+            <div className="score-box unattempted">
+              <span>⏳ Unattempted</span>
+              <strong>{results.unanswered}</strong>
+            </div>
+            <div className="score-box final-score">
+              <span>🏆 Final Score</span>
+              <strong>{results.score}</strong>
+            </div>
           </div>
-          <Link to="/dashboard" className="dashboard-link">
-            Back to Dashboard
-          </Link>
-        </div>
-      </div>
 
-      <div className="subject-breakdown">
-        <h2>Subject-wise Performance</h2>
-        <div className="subject-grid">
-          {Object.entries(subjectStats).map(([subject, stats]) => (
-            <div key={subject} className="subject-card">
-              <h3>{subject}</h3>
-              <div className="subject-stats">
-                <div className="stat-item">
-                  <FiCheck className="stat-icon correct" />
-                  <span>{stats.correct}</span>
-                </div>
-                <div className="stat-item">
-                  <FiX className="stat-icon incorrect" />
-                  <span>{stats.incorrect}</span>
-                </div>
-                <div className="stat-item">
-                  <span>Marks: {stats.marks}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+          {/* ✅ Progress Bar for Performance Overview */}
+          <div className="progress-bar">
+            <div
+              className="progress correct"
+              style={{ width: `${(results.correct_answers / results.total_questions) * 100}%` }}
+            ></div>
+            <div
+              className="progress incorrect"
+              style={{ width: `${(results.incorrect_answers / results.total_questions) * 100}%` }}
+            ></div>
+            <div
+              className="progress unattempted"
+              style={{ width: `${(results.unanswered / results.total_questions) * 100}%` }}
+            ></div>
+          </div>
 
-      <div className="detailed-results">
-        <h2>Question-wise Analysis</h2>
-        <div className="questions-grid">
-          {results.questions.map((question, index) => {
-            const detail = results.detailedResults[index];
-            return (
-              <div
-                key={question._id}
-                className={`question-item ${detail.correct ? 'correct' : 'incorrect'}`}
-                onClick={() => setSelectedQuestion({ question, detail })}
-              >
-                <span>Q{index + 1}</span>
-                <div className="question-status">
-                  {detail.correct ? (
-                    <FiCheck className="status-icon correct" />
-                  ) : (
-                    <FiX className="status-icon incorrect" />
-                  )}
-                  <span>{detail.marksAwarded} marks</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Question Detail Modal */}
-      {selectedQuestion && (
-        <Modal onClose={() => setSelectedQuestion(null)}>
-          <div className="question-modal">
-            {selectedQuestion.question.image && (
-              <img
-                src={selectedQuestion.question.image}
-                alt={`Question ${selectedQuestion.question.question_id}`}
-                className="question-image"
-              />
-            )}
-            
-            <div className="answer-comparison">
-              <div className="answer-item">
-                <span className="answer-label">Your Answer:</span>
-                <span className="answer-value">
-                  {selectedQuestion.detail.userAnswer ?? 'Unattempted'}
-                </span>
-              </div>
-              <div className="answer-item">
-                <span className="answer-label">Correct Answer:</span>
-                <span className="answer-value">
-                  {selectedQuestion.question.answer}
-                </span>
-              </div>
-            </div>
-            
-            {selectedQuestion.question.options?.length > 0 && (
-              <div className="options-list">
-                {selectedQuestion.question.options.map((option, idx) => (
-                  <div
-                    key={idx}
-                    className={`option-item ${
-                      idx + 1 === selectedQuestion.question.answer ? 'correct' : ''
-                    }`}
-                  >
-                    {option}
-                  </div>
+          {/* ✅ Detailed Results Table */}
+          <div className="detailed-results">
+            <h2>📋 Detailed Results</h2>
+            <table className="results-table">
+              <thead>
+                <tr>
+                  <th>Question ID</th>
+                  <th>Your Answer</th>
+                  <th>Correct Answer</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.answers.map((answer, index) => (
+                  <tr key={index} className={answer.status}>
+                    <td>{answer.question_id}</td>
+                    <td>{answer.user_answer !== null ? answer.user_answer : "N/A"}</td>
+                    <td>{answer.correct_answer}</td>
+                    <td className={`status ${answer.status}`}>
+                      {answer.status === "correct" ? "✅ Correct" : 
+                       answer.status === "incorrect" ? "❌ Incorrect" : 
+                       "⏳ Unattempted"}
+                    </td>
+                  </tr>
                 ))}
-              </div>
-            )}
+              </tbody>
+            </table>
           </div>
-        </Modal>
+        </>
       )}
+
+      <button className="back-button" onClick={() => navigate("/")}>🔙 Go to Dashboard</button>
     </div>
   );
 };

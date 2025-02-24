@@ -5,14 +5,11 @@ import Loader from "../components/Layout/Loader";
 import api from "../services/api";
 import "./Dashboard.css";
 
-const years = ["2024"]; // Hardcoded exam years
+const years = ["2024"];
 const slots = {
   "2024": [
     "Jan 27 Shift 1", "Jan 27 Shift 2", "Jan 29 Shift 1", "Jan 29 Shift 2",
-    "Jan 30 Shift 1", "Jan 30 Shift 2", "Jan 31 Shift 1", "Jan 31 Shift 2",
-    "Feb 1 Shift 1", "Feb 1 Shift 2", "Apr 04 Shift 1", "Apr 04 Shift 2",
-    "Apr 05 Shift 1", "Apr 05 Shift 2", "Apr 06 Shift 1", "Apr 06 Shift 2",
-    "Apr 08 Shift 1", "Apr 08 Shift 2", "Apr 09 Shift 1", "Apr 09 Shift 2"
+    "Feb 1 Shift 1", "Feb 1 Shift 2", "Apr 04 Shift 1", "Apr 04 Shift 2"
   ]
 };
 
@@ -22,47 +19,46 @@ const Dashboard = () => {
   
   const [selectedYear, setSelectedYear] = useState(years[0]);
   const [selectedShift, setSelectedShift] = useState(slots[years[0]][0]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [isStarting, setIsStarting] = useState(false);
+  const [error, setError] = useState(null);
+  const [examHistory, setExamHistory] = useState([]);
+  const [performance, setPerformance] = useState({ totalTests: 0, accuracy: 0, bestScore: 0 });
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login", { replace: true });
-    }
-  }, [user, navigate]);
+    if (!user) navigate("/login", { replace: true });
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+    // Fetch Performance & Exam History
+    const fetchDashboardData = async () => {
+      try {
+        const { data } = await api.get(`/api/dashboard-stats?user_id=${user.id}`);
+        setPerformance(data.performance || {});
+        setExamHistory(data.history || []);
+      } catch (err) {
+        console.error("Failed to fetch dashboard data:", err);
+      }
+    };
+
+    fetchDashboardData();
+  }, [user, navigate]); 
 
   const handleStartExam = async (e) => {
     e.preventDefault();
     setError(null);
     setIsStarting(true);
   
-    // Only clear answers and markedQuestions from localStorage
     localStorage.removeItem("answers");
     localStorage.removeItem("markedQuestions");
   
-    // Convert spaces to underscores for consistency
     const formattedShift = selectedShift.replace(/\s+/g, "_");
   
     try {
-      console.log("Starting Exam with:", { year: selectedYear, slot: formattedShift });
-  
-      // Removed localStorage.setItem for examYear and examSlot
-  
-      // Fetch questions from backend
+      console.log("Starting Exam:", { year: selectedYear, slot: formattedShift });
+
       const { data: questions } = await api.post("/api/questions", {
         year: selectedYear,
         slot: formattedShift
       });
-  
-      console.log("Fetched Questions:", questions);
-  
-      // Pass year and slot directly in navigation state instead of using localStorage
+
       navigate("/exam", { 
         state: { 
           questions,
@@ -76,32 +72,50 @@ const Dashboard = () => {
     } finally {
       setIsStarting(false);
     }
-  };  
+  };
 
-  if (!user) return null;
-  if (isLoading) return <Loader fullPage />;
+  const handleRetryExam = (attempt) => {
+    navigate("/exam", {
+      state: {
+        year: attempt.year,
+        slot: attempt.slot,
+        questions: attempt.questions,
+      },
+    });
+  };
 
   return (
     <div className="dashboard-container">
+      {/* ✅ Header Section */}
       <header className="dashboard-header">
-        <h1>Welcome back, {user.name}</h1>
-        <button onClick={handleLogout} className="logout-button">Logout</button>
+        <div className="user-info">
+          <div className="user-avatar">👤</div>
+          <h1>Welcome, <span className="username">{user?.name || "User"}</span></h1>
+        </div>
+        <button onClick={logout} className="logout-button">Logout</button>
       </header>
 
-      {error && (
-        <div className="dashboard-alert error" role="alert">
-          {error}
+      {/* ✅ Performance Overview */}
+      <section className="performance-overview">
+        <h2>📊 Your Progress</h2>
+        <div className="stats-grid">
+          <div className="stat-card"><p>Total Tests</p><h3>{performance.totalTests}</h3></div>
+          <div className="stat-card"><p>Best Score</p><h3>{performance.bestScore}</h3></div>
+          <div className="stat-card"><p>Accuracy</p><h3>{performance.accuracy}%</h3></div>
         </div>
-      )}
+      </section>
 
-      <section className="exam-selector">
-        <h2>Start New Attempt</h2>
+      {/* ✅ Error Message */}
+      {error && <div className="dashboard-alert error">{error}</div>}
+
+      {/* ✅ Exam Selection Section */}
+      <section className="exam-card">
+        <h2>📖 Start New Attempt</h2>
         
         <form onSubmit={handleStartExam}>
           <div className="form-group">
-            <label htmlFor="year-select">Select Year</label>
+            <label>Select Year</label>
             <select 
-              id="year-select"
               value={selectedYear}
               onChange={(e) => {
                 setSelectedYear(e.target.value);
@@ -109,16 +123,13 @@ const Dashboard = () => {
               }}
               disabled={isStarting}
             >
-              {years.map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
+              {years.map(year => <option key={year} value={year}>{year}</option>)}
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="shift-select">Select Shift</label>
+            <label>Select Shift</label>
             <select
-              id="shift-select"
               value={selectedShift}
               onChange={(e) => setSelectedShift(e.target.value)}
               disabled={isStarting || !selectedYear}
@@ -129,17 +140,47 @@ const Dashboard = () => {
             </select>
           </div>
 
-          <button 
-            type="submit" 
-            className="primary-button"
-            disabled={isStarting || !selectedShift}
-          >
-            {isStarting ? <Loader size="small" /> : "Start Exam"}
+          <button type="submit" className="start-button" disabled={isStarting}>
+            {isStarting ? <Loader size="small" /> : "🚀 Start Exam"}
           </button>
         </form>
       </section>
+
+      {/* ✅ Exam History Section */}
+      {examHistory.length > 0 && (
+        <section className="exam-history">
+          <h2>📜 Recent Attempts</h2>
+          <table className="exam-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Exam Slot</th>
+                <th>Score</th>
+                <th>Retry</th>
+              </tr>
+            </thead>
+            <tbody>
+              {examHistory.slice(0, 5).map((attempt, index) => (
+                <tr key={index}>
+                  <td>{new Date(attempt.timestamp).toLocaleDateString()}</td>
+                  <td>{attempt.slot}</td>
+                  <td>{attempt.score}</td>
+                  <td>
+                    <button 
+                      className="retry-button" 
+                      onClick={() => handleRetryExam(attempt)}
+                    >
+                      🔄 Retry
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
     </div>
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

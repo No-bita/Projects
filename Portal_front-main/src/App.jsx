@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ExamPage from "./pages/ExamPage";
+import Results from "./pages/Results";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
 
         {/* ✅ Protect dashboard but allow exam access for now */}
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
       </Routes>
     </AuthProvider>
   );

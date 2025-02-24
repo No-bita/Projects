@@ -5,27 +5,28 @@ const { Schema } = mongoose;
 // ✅ Optimized Question Schema
 const questionSchema = new Schema(
     {
-        question_id: { type: Number, required: true, unique: true },
+        question_id: { type: Number },
 
         type: { type: String, required: true, enum: ["MCQ", "Integer"] },
 
         options: { 
-            type: Array, 
-            default: [],
+            type: [String], 
             validate: {
-                validator(value) {
-                    return this.type === "MCQ" ? value.length === 4 : value.length === 0;
+                validator: function(value) {
+                    if (this.type === "MCQ") return value.length === 4; 
+                    return value.length === 0;
                 },
                 message: "MCQs must have exactly 4 options, Integer questions must have none."
-            }
+            },
+            default: []
         },
 
         answer: { 
-            type: Number, 
-            required: true,
+            type: Number,
             validate: {
-                validator(value) {
-                    return this.type === "MCQ" ? (value >= 1 && value <= 4) : Number.isInteger(value);
+                validator: function(value) {
+                    if (this.type === "MCQ") return value >= 1 && value <= 4;
+                    return Number.isInteger(value);
                 },
                 message: props => `Invalid answer: ${props.value}`
             }
@@ -38,12 +39,8 @@ const questionSchema = new Schema(
 );
 
 // ✅ Function to Retrieve Existing Collections (Mongoose Handles Collection Creation)
-const getQuestionModel = async (collectionName) => {
-    if (mongoose.models[collectionName]) {
-        return mongoose.models[collectionName];
-    }
-    
-    return mongoose.model(collectionName, questionSchema, collectionName);
+const getQuestionModel = (collectionName) => {
+    return mongoose.models[collectionName] || mongoose.model(collectionName, questionSchema, collectionName);
 };
 
 export default getQuestionModel;
