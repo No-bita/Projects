@@ -29,7 +29,7 @@ const Results = () => {
         }
 
         const response = await fetch(
-          `http://localhost:5001/api/results/calculate?user_id=${user_id}&year=${year}&slot=${encodeURIComponent(slot)}`,
+          `https://jee-past-years.onrender.com/api/results/calculate?user_id=${user_id}&year=${year}&slot=${encodeURIComponent(slot)}`,
           {
             method: "GET",
             headers: {

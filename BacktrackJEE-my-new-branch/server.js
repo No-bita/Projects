@@ -22,7 +22,7 @@ const app = express();
 
 // ✅ CORS Configuration
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://jee-past-years.vercel.app",
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     allowedHeaders: "Content-Type,Authorization",
     credentials: true,
