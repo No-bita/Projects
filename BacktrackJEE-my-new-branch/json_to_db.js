@@ -12,7 +12,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const jsonFilePath = path.resolve(__dirname, "JEE Mains/2024_Jan_27_Shift_2.json");
+const jsonFilePath = path.resolve(__dirname, "JEE Mains/2024_Apr_04_Shift_1.json");
 const collectionName = path.basename(jsonFilePath, ".json"); // ✅ Directly use the filename without modification
 
 // ✅ Fix: Use Correct MONGO_URI with Explicit Database Name

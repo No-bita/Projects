@@ -1,4 +1,4 @@
-/* ✅ Main Exam Layout */
+/* ===== Main Exam Layout (Fix Alignment) ===== */
 .exam-container {
   display: flex;
   justify-content: space-between;
@@ -9,27 +9,7 @@
   box-sizing: border-box;
 }
 
-/* ✅ Question Area */
-.exam-content {
-  flex: 3;
-  padding: 20px;
-}
-
-/* ✅ Navigation Panel */
-.exam-navigation-panel {
-  flex: 1;
-  max-width: 280px;
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-  height: 60vh;
-  overflow-y: auto;
-  position: sticky;
-  top: 100px;
-}
-
-/* ✅ Exam Header & Timer */
+/* ===== Exam Header & Timer ===== */
 .exam-header {
   display: flex;
   justify-content: space-between;
@@ -45,54 +25,143 @@
   transition: color 0.3s ease-in-out;
 }
 
-/* Timer Warning & Danger */
 .timer.warning { color: #ffcc00; }  /* Yellow - < 1hr */
 .timer.danger { color: #dc3545; }   /* Red - < 30min */
 
-/* ✅ Question Container */
-.exam-question-container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  width: 90%;
-  margin: auto;
+/* ===== Align Questions & Navigation Panel Side by Side ===== */
+.exam-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
 }
 
-/* ✅ Question Image */
+/* ===== Question Section ===== */
+.exam-question-container {
+  flex: 2;
+  background: white;
+  width: 150%;
+  padding: 25px;  /* ✅ Increased padding for better spacing */
+  border-radius: 10px;  /* ✅ Slightly rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);  /* ✅ Slightly deeper shadow for depth */
+  border: 1px solid #ddd;  /* ✅ Light border for definition */
+}
+
+/* ✅ Improve spacing inside question area */
+.exam-question {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+/* ✅ Standardized Image Size for All Questions */
 .exam-question-image {
-  width: 100%;
-  max-width: 700px;
+  width: 100%;  /* ✅ Ensures it scales within the container */
+  max-width: 600px;  /* ✅ Sets a maximum width */
+  height: 250px;  /* ✅ Fixed height for uniform display */
+  object-fit: contain;  /* ✅ Prevents stretching, fits image inside */
   display: block;
-  margin: 10px auto;
+  margin: 15px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ Adjust Image Size for Smaller Screens */
+@media (max-width: 768px) {
+  .exam-question-image {
+    max-width: 90%;  /* ✅ Slightly smaller on mobile */
+    height: 200px;  /* ✅ Adjust height for mobile screens */
+  }
+}
+
+/* ===== Navigation Panel (Fixed Positioning) ===== */
+.exam-navigation-panel {
+  flex: 1;
+  max-width: 250px;
+  background: #f8f9fa;
+  padding: 15px;
   border-radius: 8px;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  height: 75vh;
+  overflow-y: auto;
+  position: sticky;
+  top: 100px;
 }
 
-/* ✅ Answer Input */
-.exam-integer-input {
+.exam-navigation-panel h3 {
+  margin-bottom: 10px;
+}
+
+/* ===== Question Grid ===== */
+.question-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 8px;
+}
+
+/* ===== Question Buttons ===== */
+.question-button {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  background: white;
   display: flex;
   justify-content: center;
-  margin-top: 15px;
+  align-items: center;
+  transition: all 0.3s;
+  font-weight: bold;
 }
 
-.integer-input {
-  width: 60%;
-  padding: 10px;
-  font-size: 18px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  text-align: center;
-  transition: border-color 0.3s;
+/* ===== Answered & Active States ===== */
+.question-button.answered {
+  background: #28a745;  /* Green */
+  color: white;
+  border-color: #1e7e34;
 }
 
-.integer-input:focus {
-  border-color: #007bff;
-  outline: none;
+/* ❌ Unattempted Questions (Red) */
+.question-button.unattempted {
+  background: #dc3545;  /* Red */
+  color: white;
+  border: 2px solid #bd2130;
 }
 
-/* ✅ Options Styling */
+/* ⭐ Marked for Review but Unattempted (Purple) */
+.question-button.marked-without-answer {
+  background: #6f42c1; /* Purple */
+  color: white;
+  border: 3px dashed #5a32a3;
+}
+
+/* ⭐✅ Marked for Review and Attempted (Blue with Checkmark) */
+.question-button.marked-with-answer {
+  background: #007bff; /* Blue */
+  color: white;
+  border: 3px solid #0056b3;
+  position: relative;
+}
+
+.question-button.marked-with-answer::after {
+  content: "✔";
+  font-size: 14px;
+  font-weight: bold;
+  position: absolute;
+  bottom: 2px;
+  right: 5px;
+}
+
+/* 🔵 Active Question (Current Selection) */
+.question-button.active {
+  border: 3px solid #ffc107;
+  background: #fff3cd;
+  color: black;
+}
+
+
+/* ===== Options (MCQ) ===== */
 .exam-options {
   display: flex;
   flex-direction: column;
@@ -111,7 +180,7 @@
 
 .exam-option:hover { background: #f1f1f1; }
 
-/* ✅ Highlight Selected Option */
+/* ===== Highlight Selected Option ===== */
 .exam-option.selected {
   background: #007bff;
   color: white;
@@ -119,84 +188,47 @@
   font-weight: bold;
 }
 
-/* ✅ Navigation Buttons */
-.exam-navigation {
+/* ===== Navigation Buttons (Aligned in a Single Row) ===== */
+.question-navigation {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
 }
 
+/* ✅ Make all buttons equal-sized */
 .nav-button {
-  background: #28a745;
-  color: white;
-  padding: 12px 25px;
-  border-radius: 5px;
+  flex: 1;
+  padding: 12px;
   font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  border: none;
   cursor: pointer;
-  transition: 0.3s;
-}
-
-.nav-button:hover { background: #218838; }
-.nav-button:disabled { background: gray; cursor: not-allowed; }
-
-/* ✅ Question Grid */
-.question-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-gap: 5px;
-}
-
-/* ✅ Question Button */
-.question-button {
-  width: 50px;
-  height: 50px;
-  font-size: 16px;
   border-radius: 5px;
-  cursor: pointer;
-  border: 2px solid #ccc;
-  background: white;
+  transition: background 0.3s ease;
+  height: 50px;  /* ✅ Ensuring equal height */
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: 0.3s;
 }
 
-.question-button:hover { background: #d1ecf1; }
+/* Button Colors */
+.nav-button.prev { background: #6c757d; color: white; } /* Prev */
+.nav-button.mark { background: #ffcc00; color: black; } /* Mark for Review */
+.nav-button.next { background: #007bff; color: white; } /* Next */
+.nav-button.submit { background: #fd7e14; color: white; } /* Submit */
 
-/* ✅ Answered & Active Questions */
-.question-button.answered {
-  background: #28a745;
-  color: white;
-  font-weight: bold;
-}
+/* 🔄 Button Hover Effects */
+.nav-button:hover { opacity: 0.85; }
+.nav-button:disabled { background: gray; cursor: not-allowed; }
 
-.question-button.active {
-  border: 3px solid #007bff;
-  background: #dbeafe;
-}
-
-/* ✅ Not Visited Questions */
-.question-button.not-visited {
-  background: #f8f9fa;
-  border: 2px dashed #ccc;
-}
-
-/* ✅ Mark for Review */
-.question-button.marked-with-answer {
-  border: 3px solid #ffcc00;
-  background: #fffae6;
-}
-
-.question-button.marked-without-answer {
-  border: 3px dashed #ffcc00;
-  background: #fff0cc;
-}
-
-/* ✅ Submit Button */
+/* ===== Submit Button (Full Width) ===== */
 .submit-button {
   width: 100%;
   padding: 14px;
-  margin-top: 15px;
+  margin-top: 20px;
   background: #fd7e14;
   color: white;
   font-size: 18px;
@@ -204,12 +236,12 @@
   border-radius: 5px;
   cursor: pointer;
   border: none;
-  transition: 0.3s;
+  transition: background 0.3s;
 }
 
 .submit-button:hover { background: #e76610; }
 
-/* ✅ Responsive Design */
+/* ===== Responsive Design (For Mobile & Smaller Screens) ===== */
 @media (max-width: 768px) {
   .exam-container {
     flex-direction: column;
@@ -225,13 +257,22 @@
   }
 
   .question-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .question-button {
     width: 40px;
     height: 40px;
-    font-size: 14px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid #ccc;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s;
+    font-weight: bold;
   }
 
   .exam-content { width: 100%; }

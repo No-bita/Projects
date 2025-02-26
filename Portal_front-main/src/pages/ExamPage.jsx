@@ -8,7 +8,6 @@ const ExamPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Initializing state with default values from location or localStorage
   const [examData, setExamData] = useState({
     questions: location.state?.questions || [],
     answers: JSON.parse(localStorage.getItem("answers") || "[]"),
@@ -16,7 +15,7 @@ const ExamPage = () => {
   });
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(3 * 60 * 60); // 3 hours in seconds
+  const [timeLeft, setTimeLeft] = useState(3 * 60 * 60); // 3 hours
   const [timerClass, setTimerClass] = useState("");
 
   const examYear = location.state?.year || localStorage.getItem("year");
@@ -45,23 +44,21 @@ const ExamPage = () => {
     else setTimerClass("");
   }, [timeLeft]);
 
-  // Update localStorage only when necessary
+  // Store answers and marked questions in localStorage
   useEffect(() => {
     localStorage.setItem("answers", JSON.stringify(examData.answers));
     localStorage.setItem("markedQuestions", JSON.stringify(examData.markedQuestions));
   }, [examData.answers, examData.markedQuestions]);
 
-  // Format time (HH:MM:SS)
-  const formatTime = (seconds) =>
-    new Date(seconds * 1000).toISOString().substr(11, 8);
+  const formatTime = (seconds) => new Date(seconds * 1000).toISOString().substr(11, 8);
 
-  // Get the answer for the current question
+  // Get answer for the current question
   const getCurrentAnswer = useCallback(() => {
     const currentQuestion = examData.questions[currentQuestionIndex];
     return examData.answers.find((a) => a.question_id === Number(currentQuestion?.question_id)) || {};
   }, [examData.answers, examData.questions, currentQuestionIndex]);
 
-  // Update Answer for the Current Question
+  // Update answer for the current question
   const updateAnswer = useCallback((selectedValue) => {
     const currentQuestion = examData.questions[currentQuestionIndex];
     if (!currentQuestion) return;
@@ -77,16 +74,16 @@ const ExamPage = () => {
     }));
   }, [examData.questions, currentQuestionIndex]);
 
-  // Handle Option Selection
+  // Handle option selection
   const handleOptionSelect = (option) => updateAnswer(option);
 
-  // Handle Integer Input for Numerical Questions
+  // Handle integer input for numerical questions
   const handleIntegerInput = (e) => {
     const inputValue = e.target.value;
     if (/^[0-9]*$/.test(inputValue)) updateAnswer(inputValue);
   };
 
-  // Mark Question for Review
+  // Mark question for review
   const handleMarkForReview = () => {
     const currentQuestion = examData.questions[currentQuestionIndex];
     const isAnswered = !!examData.answers.find((a) => a.question_id === currentQuestion?.question_id);
@@ -96,15 +93,21 @@ const ExamPage = () => {
       ...prev,
       markedQuestions: {
         ...prev.markedQuestions,
-        [currentQuestionIndex]: prev.markedQuestions[currentQuestionIndex] === markType ? null : markType,
+        [currentQuestionIndex]: prev.markedQuestions[currentQuestionIndex] ? null : markType,
       },
     }));
   };
 
-  // Navigate to Previous or Next Question
-  const handleNavigation = (direction) => setCurrentQuestionIndex((prev) => prev + direction);
+  // Navigate between questions
+  const handleNavigation = (direction) => {
+    setCurrentQuestionIndex((prevIndex) => {
+      const newIndex = prevIndex + direction;
+      return newIndex >= 0 && newIndex < examData.questions.length ? newIndex : prevIndex;
+    });
+  };
+  
 
-  // Submit Exam Attempt
+  // Submit exam attempt
   const handleSubmit = async () => {
     const token = localStorage.getItem("token");
 
@@ -182,21 +185,39 @@ const ExamPage = () => {
             <input type="text" pattern="[0-9]*" className="integer-input" value={getCurrentAnswer()?.selected_answer ?? ""} onChange={handleIntegerInput} />
           )}
         </div>
-      </div>
 
+        {/* ✅ Navigation Buttons Below Questions */}
+        <div className="question-navigation">
+            <button className="nav-button" onClick={() => handleNavigation(-1)} disabled={currentQuestionIndex === 0}>⬅ Prev</button>
+            <button className="nav-button" onClick={handleMarkForReview}>
+              ⭐ {examData.markedQuestions[currentQuestionIndex] ? "Unmark Review" : "Mark for Review"}
+            </button>
+            <button className="nav-button" onClick={() => handleNavigation(1)} disabled={currentQuestionIndex >= examData.questions.length - 1}>Next ➡</button>
+            <button className="nav-button submit-button" onClick={handleSubmit}>✅ Submit</button>
+          </div>
+        </div>
+
+      {/* ✅ Navigation Panel on Right */}
       <div className="exam-navigation-panel">
         <h3>Questions</h3>
         <div className="question-grid">
           {examData.questions.map((_, index) => (
-            <button key={index} className={`question-button ${examData.answers.find((a) => a.question_id === index + 1) ? "answered" : "not-visited"}`} onClick={() => setCurrentQuestionIndex(index)}>
+            <button 
+              key={index} 
+              className={`question-button ${
+                currentQuestionIndex === index 
+                  ? "active" 
+                  : examData.answers.some((a) => a.question_id === examData.questions[index]?.question_id)
+                    ? "answered"
+                    : "not-visited"
+              }`}
+              onClick={() => setCurrentQuestionIndex(index)}
+            >
               {index + 1}
             </button>
           ))}
         </div>
-        <button onClick={handleMarkForReview} className="mark-review-button">
-          {examData.markedQuestions[currentQuestionIndex] ? "Unmark Review" : "Mark for Review"}
-        </button>
-        <button className="submit-button" onClick={handleSubmit}>Submit</button>
+
       </div>
     </div>
   );

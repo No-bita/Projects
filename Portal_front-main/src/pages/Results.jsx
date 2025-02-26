@@ -113,19 +113,22 @@ const Results = () => {
                 </tr>
               </thead>
               <tbody>
-                {results.answers.map((answer, index) => (
-                  <tr key={index} className={answer.status}>
-                    <td>{answer.question_id}</td>
-                    <td>{answer.user_answer !== null ? answer.user_answer : "N/A"}</td>
-                    <td>{answer.correct_answer}</td>
-                    <td className={`status ${answer.status}`}>
-                      {answer.status === "correct" ? "✅ Correct" : 
-                       answer.status === "incorrect" ? "❌ Incorrect" : 
-                       "⏳ Unattempted"}
-                    </td>
-                  </tr>
+                {results.answers
+                  .sort((a, b) => a.question_id - b.question_id) // ✅ Sort by Question ID
+                  .map((answer, index) => (
+                    <tr key={index} className={answer.status}>
+                      <td>{answer.question_id}</td>
+                      <td>{answer.user_answer !== null ? answer.user_answer : "N/A"}</td>
+                      <td>{answer.correct_answer}</td>
+                      <td className={`status ${answer.status}`}>
+                        {answer.status === "correct" ? "✅ Correct" : 
+                        answer.status === "incorrect" ? "❌ Incorrect" : 
+                        "⏳ Unattempted"}
+                      </td>
+                    </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
         </>

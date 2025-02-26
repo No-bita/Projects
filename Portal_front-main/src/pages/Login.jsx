@@ -52,6 +52,8 @@ const Login = () => {
 
       // ✅ Store token and user details
       login(data.user, data.token); 
+      localStorage.setItem("user_id", data.user.id);
+      localStorage.setItem("user_name", data.user.name);
 
       // ✅ Redirect to dashboard
       navigate("/dashboard");

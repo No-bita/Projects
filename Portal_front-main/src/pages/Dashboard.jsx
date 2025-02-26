@@ -53,6 +53,8 @@ const Dashboard = () => {
   
     try {
       console.log("Starting Exam:", { year: selectedYear, slot: formattedShift });
+      localStorage.setItem("year", selectedYear);
+      localStorage.setItem("slot", formattedShift);
 
       const { data: questions } = await api.post("/api/questions", {
         year: selectedYear,
