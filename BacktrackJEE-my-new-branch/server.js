@@ -22,11 +22,15 @@ const app = express();
 
 // ✅ CORS Configuration
 app.use(cors({
-    origin: "https://jee-past-years.vercel.app",
+    origin: [
+        "https://jee-past-years.vercel.app", 
+        "https://jee-past-years-edrgr0qh0.vercel.app"
+    ],
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     allowedHeaders: "Content-Type,Authorization",
     credentials: true,
 }));
+
 
 // Middleware
 app.use(express.json());
