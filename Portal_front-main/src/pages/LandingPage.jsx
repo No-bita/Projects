@@ -46,7 +46,7 @@ const LandingPage = () => {
         <div className="hero-illustration">
           <div className="image-wrapper">
             <img 
-              src="Portal_front-main/src/pages/ep-illn.jpg" 
+              src="/images/ep-illn.jpg" 
               alt="Exam Interface Preview"
               className="preview-image"
             />
