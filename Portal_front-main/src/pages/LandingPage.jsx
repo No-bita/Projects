@@ -35,17 +35,18 @@ const LandingPage = () => {
           </p>
 
           <div className="cta-buttons">
-            <button className="primary-cta" aria-label="Start free trial">
+            <Link to="/login" className="primary-cta" aria-label="Start free trial">
               <FaRocket className="cta-icon" />
               Start Solving Now
-            </button>
+            </Link>
           </div>
         </div>
+
 
         <div className="hero-illustration">
           <div className="image-wrapper">
             <img 
-              src="/images/exam-interface-light.png" 
+              src="ep-illn.jpg" 
               alt="Exam Interface Preview"
               className="preview-image"
             />
@@ -120,11 +121,11 @@ const LandingPage = () => {
         <div className="final-cta-container">
           <h2 className="cta-title">Solve Real JEE Questions & Boost Your Score Today!</h2>
           <p className="cta-subtitle">
-          Get instant access to real JEE Mains questions with detailed solutions. Track progress, improve faster!
+            Get instant access to real JEE Mains questions with detailed solutions. Track progress, improve faster!
           </p>
-          <button className="final-cta-button" aria-label="Get started free">
+          <Link to="/login" className="final-cta-button" aria-label="Get started free">
             Start Solving Now!
-          </button>
+          </Link>
         </div>
       </section>
     </div>
