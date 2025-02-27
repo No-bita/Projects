@@ -134,7 +134,7 @@ const Results = () => {
         </>
       )}
 
-      <button className="back-button" onClick={() => navigate("/")}>🔙 Go to Dashboard</button>
+      <button className="back-button" onClick={() => navigate("/")}>Logout</button>
     </div>
   );
 };
