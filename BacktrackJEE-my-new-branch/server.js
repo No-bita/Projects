@@ -24,7 +24,8 @@ const app = express();
 app.use(cors({
     origin: [
         "https://jee-past-years.vercel.app", 
-        "https://jee-past-years-edrgr0qh0.vercel.app"
+        "https://jee-past-years-edrgr0qh0.vercel.app",
+        "https://jee-past-years-5rckuiy39.vercel.app"
     ],
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     allowedHeaders: "Content-Type,Authorization",
