@@ -19,15 +19,6 @@
   padding: 10px 0;
 }
 
-.timer {
-  font-size: 1.5rem;
-  font-weight: bold;
-  transition: color 0.3s ease-in-out;
-}
-
-.timer.warning { color: #ffcc00; }  /* Yellow - < 1hr */
-.timer.danger { color: #dc3545; }   /* Red - < 30min */
-
 /* ===== Align Questions & Navigation Panel Side by Side ===== */
 .exam-main {
   display: flex;
@@ -91,6 +82,16 @@
 .exam-navigation-panel h3 {
   margin-bottom: 10px;
 }
+
+.timer {
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
+}
+
+.timer.warning { color: #ffcc00; }  /* Yellow - < 1hr */
+.timer.danger { color: #dc3545; }   /* Red - < 30min */
+
 
 /* ===== Question Grid ===== */
 .question-grid {

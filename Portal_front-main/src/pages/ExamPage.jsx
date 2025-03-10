@@ -159,7 +159,6 @@ const ExamPage = () => {
       <div className="exam-content">
         <div className="exam-header">
           <h1>Exam in Progress</h1>
-          <p className={`exam-timer ${timerClass}`}>Time Left: <span>{formatTime(timeLeft)}</span></p>
         </div>
 
         <div className="exam-question-container">
@@ -199,6 +198,7 @@ const ExamPage = () => {
 
       {/* ✅ Navigation Panel on Right */}
       <div className="exam-navigation-panel">
+      <p className={`exam-timer ${timerClass}`}>Time Left: <span>{formatTime(timeLeft)}</span></p>
         <h3>Questions</h3>
         <div className="question-grid">
           {examData.questions.map((_, index) => (
